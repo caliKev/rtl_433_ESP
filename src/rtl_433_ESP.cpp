@@ -238,7 +238,7 @@ void rtl_433_ESP::initReceiver(byte inputPin, float receiveFrequency) {
 
 #if defined(RF_SX1276) || defined(RF_SX1278)
   if (ookModulation) {
-    state = radio.setDataShapingOOK(2); // Default 0 ( 0, 1, 2 )
+    state = radio.setDataShapingOOK(1); // Default 0 ( 0, 1, 2 )
     RADIOLIB_STATE(state, "setDataShapingOOK");
 
     state = radio.setOokThresholdType(
@@ -257,10 +257,10 @@ void rtl_433_ESP::initReceiver(byte inputPin, float receiveFrequency) {
         OokFixedThreshold); // Default 0x0C RADIOLIB_SX127X_OOK_FIXED_THRESHOLD
     RADIOLIB_STATE(state, "OokFixedThreshold");
 
-    state = radio.setBitRate(1.2);
+    state = radio.setBitRate(32.768);
     RADIOLIB_STATE(state, "setBitRate");
 
-    state = radio.setRxBandwidth(SX127X_RXBANDWIDTH); // Lowering to 125 lowered number of received signals
+    state = radio.setRxBandwidth(32.768*4); // Lowering to 125 lowered number of received signals
     RADIOLIB_STATE(state, "setRxBandwidth");
 
   } else {
@@ -293,10 +293,12 @@ void rtl_433_ESP::initReceiver(byte inputPin, float receiveFrequency) {
 
   state = radio.setDirectSyncWord(0, 0); // Disable
   RADIOLIB_STATE(state, "setDirectSyncWord");
+  /*
   if (ookModulation) {
     state = radio.disableBitSync();
     RADIOLIB_STATE(state, "disableBitSync");
   }
+  */
 #endif
 
 #ifdef MEMORY_DEBUG
