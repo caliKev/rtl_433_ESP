@@ -117,6 +117,7 @@ int _totalRssi = 0;
 int _rssiCount = 0;
 
 int _noiseCount = 0; // Count of ticks while receiver is disabled
+int _noisePending = 0; // Possible noise ticks, but may be start of a message.
 
 #ifdef DEAF_WORKAROUND
 unsigned long _deafWorkaround = millis();
@@ -353,9 +354,14 @@ int rtl_433_ESP::receivePulseTrain() {
  * 
  */
 void ICACHE_RAM_ATTR rtl_433_ESP::interruptHandler() {
-  if (!_enabledReceiver || !receiveMode) {
+  // Receiver isn't enabled at all, this is definitely noise
+  if (!_enabledReceiver) {
     _noiseCount++;
     return;
+  }
+  // This could be noise, or it could be preamble occurring before an RSSI update.  Count it as pending noise but also update our pulse train
+  if (!receiveMode) {
+    _noisePending++;
   }
   volatile pulse_data_t& pulseTrain = _pulseTrains[_actualPulseTrain];
   volatile int* pulse = pulseTrain.pulse;
@@ -656,6 +662,11 @@ void rtl_433_ESP::rtl_433_ReceiverTask(void* pvParameters) {
           logprintfLn(LOG_INFO,
                       "rtl_433_ReceiverTask uxTaskGetStackHighWaterMark: %d", uxTaskGetStackHighWaterMark(NULL));
 #endif
+        }
+        else { //We're not in receive mode and RSSI is low, add any pending noise to our noise count, and reset pending noise and numbper of pulses to 0
+          _noiseCount += _noisePending;
+          _noisePending = 0;
+          _nrpulses= 0;
         }
       }
     }
