@@ -256,9 +256,10 @@
  */
 #  define DEVICES         \
     DECL(neptune_r900) \
+    DECL(fineoffset_WH2) \
 /* Add new personal decoders here. */
 #  define NUMOF_OOK_DEVICES 1
-#  define NUMOF_FSK_DEVICES 0
+#  define NUMOF_FSK_DEVICES 1
 #endif
 
 #define DECL(name) extern r_device name;

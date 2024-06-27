@@ -327,7 +327,11 @@ void rtlSetup() {
     // end of fragment
 
 #else
-    memcpy(&cfg->devices[0], &neptune_r900, sizeof(r_device));
+    if (rtl_433_ESP::ookModulation) {
+      memcpy(&cfg->devices[0], &neptune_r900, sizeof(r_device));
+    } else {
+      memcpy(&cfg->devices[0], &fineoffset_WH2, sizeof(r_device));
+    }
 #endif
 
 #ifdef RTL_FLEX
