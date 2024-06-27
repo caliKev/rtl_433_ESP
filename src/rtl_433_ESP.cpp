@@ -592,6 +592,7 @@ void rtl_433_ESP::rtl_433_ReceiverTask(void* pvParameters) {
 #  endif
 #endif
             _noiseCount = 0;
+            _noisePending = 0;
           }
         }
         signalEnd = micros();
